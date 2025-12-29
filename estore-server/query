@@ -1,0 +1,181 @@
+create schema estore;
+
+create table estore.categories (
+	id int not null,
+    category varchar(45) default null,
+    parent_category_id int default null,
+    primary key (id)
+);
+
+insert into estore.categories (id, category, parent_category_id) values
+(1, "Men", null),
+(2, "Women", null),
+(3, "Kids", null),
+(4, "Casual Wear", 1),
+(5, "Party Wear", 2),
+(6, "Foot Wear", 2),
+(7, "Accessories", 3);
+
+select * from estore.categories;
+
+create table estore.products(
+id int not null,
+product_name varchar(45) default null,
+product_description varchar(100) default null,
+price decimal(10,0) default null,
+ratings int,
+category_id int default null,
+product_img varchar(45),
+primary key(id),
+key FK_Products_Categories_id(category_id),
+constraint FK_Products_Categories foreign key(category_id) references estore.categories(id)
+on update cascade on delete cascade
+);
+
+drop table estore.products;
+
+select * from estore.products;
+
+SELECT p.*
+FROM estore.products p
+JOIN estore.categories c ON p.category_id = c.id
+WHERE c.parent_category_id = 2
+  AND p.keywords LIKE '%jeans%';
+  
+  SELECT p.*
+FROM estore.products p
+JOIN estore.categories c ON p.category_id = c.id
+WHERE (c.id = 2 OR c.parent_category_id = 2)
+  AND p.keywords LIKE '%jeans%';
+  
+  SELECT id, parent_category_id
+FROM estore.categories
+WHERE id = 2 OR parent_category_id = 2;
+
+
+
+INSERT INTO estore.products
+(id, product_name, product_description, price,ratings, category_id, product_img)
+VALUES
+(1, 'Jacket',
+ 'Warm winter jacket made with durable fabric and comfortable inner lining.',
+ 100, 4.5, 2, 'shop-1.jpeg'),
+
+(2, 'Purse',
+ 'Elegant purse with spacious compartments, perfect for daily use and outings.',
+ 25,4, 2, 'shop-2.jpeg'),
+
+(3, 'Dress',
+ 'Stylish and comfortable dress suitable for casual wear and special occasions.',
+ 45,3.6, 2, 'shop-3.jpeg'),
+
+(4, 'Denim Jeans',
+ 'Classic blue denim jeans with a slim fit design and high-quality stitching.',
+ 50,4.7, 2, 'shop-4.jpeg'),
+
+(5, 'Laced Boots',
+ 'Premium laced boots offering strong grip, durability, and all-day comfort.',
+ 65,2.9, 2, 'shop-5.jpeg'),
+
+(6, 'Back pack',
+ 'Lightweight and durable backpack with multiple compartments for daily travel.',
+ 20,5, 2, 'shop-6.jpeg'),
+ 
+ (7, 'Men Casual Shirt',
+ 'Comfortable cotton casual shirt suitable for everyday wear.',
+ 35,4.1, 4, 'shop-7.jpeg'),
+
+(8, 'Men Hoodie',
+ 'Warm hooded sweatshirt ideal for casual outings and winter wear.',
+ 45,3.7, 4, 'shop-8.jpeg'),
+
+(9, 'Evening Gown',
+ 'Elegant evening gown designed for parties and special occasions.',
+ 120,3, 5, 'shop-9.jpeg'),
+
+(10, 'Party Saree',
+ 'Stylish party wear saree with modern design and rich fabric.',
+ 150,2.1, 5, 'shop-10.jpeg'),
+ 
+ (11, 'Women Heels',
+ 'Fashionable high-heel footwear offering style and comfort.',
+ 60,4.6, 6, 'shop-11.jpeg'),
+
+(12, 'Women Sandals',
+ 'Comfortable flat sandals suitable for daily wear and casual outings.',
+ 40,3.5, 6, 'shop-12.jpeg'),
+
+(13, 'Kids Cap',
+ 'Colorful cap designed for kids, perfect for outdoor activities.',
+ 10,1.8, 7, 'shop-13.jpeg'),
+
+(14, 'Kids Sunglasses',
+ 'UV-protected sunglasses made especially for kids.',
+ 15,4.3, 7, 'shop-14.jpeg');
+ 
+ use estore;
+ 
+ SELECT p.*
+FROM estore.products p
+JOIN categories c ON p.category_id = c.id
+WHERE c.parent_category_id = 1;
+
+alter table estore.products
+add column keywords varchar(200) null;
+
+update estore.products set keywords = "jacket,wollen,black" where id =1;
+update estore.products set keywords = "purse,yellow" where id =2;
+update estore.products set keywords = "dress,white" where id =3;
+update estore.products set keywords = "denim, jeans,blue" where id =4;
+update estore.products set keywords = "blue,leather,black" where id =5;
+update estore.products set keywords = "back,pack,bag" where id =6;
+update estore.products set keywords = "men,casual,shirt,white" where id =7;
+update estore.products set keywords = "men,hoddie,yellow" where id =8;
+update estore.products set keywords = "evening,grown,green" where id =9;
+update estore.products set keywords = "party,saree,white" where id =10;
+update estore.products set keywords = "women,heels,green" where id =11;
+update estore.products set keywords = "women,sandals,pink" where id =12;
+update estore.products set keywords = "kids,cap,grey" where id =13;
+update estore.products set keywords = "kids,sunglasses,green" where id =14;
+
+
+
+create table estore.users(
+	id int not null auto_increment,
+    email varchar(45) not null,
+    firstName varchar(45) default null,
+    lastName varchar(45) default null,
+    address varchar(200) default null,
+    city varchar(500) default null,
+    state varchar(45) default null,
+    pin varchar(10) default null,
+    password varchar(500) default null,
+    primary key(id)
+)
+
+create table estore.orders(
+	orderId int not null auto_increment,
+    orderDate datetime default current_timestamp,
+    userName varchar(100) default null,
+    address varchar(200) default null,
+    city varchar(45) default null,
+    state varchar(45) default null,
+    pin varchar(10) default null,
+    total decimal(10,0) default null,
+    userId int default null,
+    primary key(orderId),
+    key FK_User_id (userId),
+    constraint FK_User foreign key (userId) references users (id)
+)
+
+create table estore.orderdetails(
+	orderId int not null,
+    productId int default null,
+    qty int default null,
+    price decimal (10,0) default null,
+    amount decimal(10,0) default null,
+    key FK_orderId_id (orderId),
+    key FK_productId_id (productId),
+    constraint FK_orderId foreign key (orderId) references orders (orderId),
+    constraint FK_productId foreign key (productId) references products (id)
+)
