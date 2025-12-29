@@ -1,0 +1,103 @@
+<div
+  class="w-full max-w-full min-h-20 shadow-[5px_5px_20px_gray] bg-gray-900 flex items-center justify-between px-4"
+>
+  <div class="text-white px-3 w-[23%] flex items-center">
+    <h1 class="text-xl font-bold">eStore</h1>
+  </div>
+
+  @if (displaySearch()) {
+    <div
+      class="p-0 w-[50%] h-10 bg-white flex items-center rounded-md overflow-hidden"
+    >
+      <select #categoryOptions
+        class="=w-auto bg-gray-300 h-full border-none font-semibold px-2 pr-5"
+      >
+      @for (category of categoryStoreItem.topLevelCategories(); track $index) {
+          <option [value]="category.id">{{category.category}}</option>
+      }
+      </select>
+      <input #keyword
+        class="w-[90%] h-full inline-block border-none outline-none px-3"
+        placeholder="Search..."
+      />
+      <button (click)="onClickSearch(keyword.value, categoryOptions.value)"
+        class="w-[10%] h-full border-none bg-gray-300 flex justify-center items-center"
+      >
+        <fa-icon [icon]="faSearch"></fa-icon>
+      </button>
+    </div>
+  }
+
+  <div class="flex items-center w-[27%] gap-6 justify-end h-full">
+    @if (!isUserAuthenticated()) {
+      <div class="flex items-center gap-2 text-white">
+        <fa-icon [icon]="faUserCircle" class="text-[1.3em]"></fa-icon>
+        <h5>
+          <a 
+          routerLink="/home/login" 
+          class="px-1 py-1 rounded transition-all duration-300 hover:bg-white hover:text-gray-900">
+          Sign in / Join
+        </a>
+        </h5>
+      </div>
+    }
+
+    @if (isUserAuthenticated()) {
+      <div class='relative inline-block text-left'>
+        <button
+        (click)="toggleDropdown()"
+        class='inline-flex items-center gap-2 px-4 py-2
+        bg-gray-700 text-white font-medium rounded-md
+        hover:bg-gray-800 transition text-base cursor-pointer
+        '
+        >
+          <fa-icon [icon]="faUserCircle" class="text-[1.3rem]"></fa-icon>
+          Hi {{userName()}}
+          <fa-icon [icon]="faChevronDown"></fa-icon>
+        </button>
+
+        @if (dropdownVisible) {
+          <div
+          class='absolute right-0 mt-2 w-36 bg-white rounded-md
+          shadow-md border border-gray-200 z-50'
+          >
+           <ul class='py-1 text-sm text-gray-700'>
+            <li class='block px-4 py-2 hover:bg-gray-100 cursor-pointer'>
+              <a routerLink="/home/pastOrders">
+                Past Orders
+              </a>
+            </li>
+            <li class='block px-4 py-2 hover:bg-gray-100 cursor-pointer'>
+              <a (click)="logout()">
+                Logout
+              </a>
+            </li>
+           </ul> 
+          </div>
+        }
+      </div>
+    }
+
+    <div class="relative flex items-center">
+      <button 
+      type='button'
+      (click)="navigateToCart()"
+      class='flex items-center justify-center text-white p-2
+      rounded-full bg-gray-700 hover:bg-gray-800 transition-colors cursor-pointer
+      '>
+        <fa-icon [icon]="faShoppingCart" class='text-[1.3rem]'></fa-icon>
+      </button>
+
+      @if (cart.cart()) {
+        @if (cart.totalProducts()>0) {
+          <span class='absolute -top-1 -right-1 flex items-center
+          justify-center text-[0.7rem] font-semibold text-white
+          bg-amber-500 rounded-full w-5 h-5`
+          '>
+            {{cart.totalProducts()}}
+          </span>
+        }
+      }
+    </div>
+  </div>
+</div>
